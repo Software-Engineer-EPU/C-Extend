@@ -1,106 +1,151 @@
+/*Dijkstra with OOP*/
+/*
+    Luu y: Sua lai path file input output cho dung
+    Edit line 9, 10, 11
+*/
 /* Code by KingNNT */
 #include <bits/stdc++.h>
-using namespace std;
 
 #define pathio "/media/kingnnt/Learning And Working/Code/C-Extend/GNU-Compiler/Test/"
-#define FIN pathio "input.txt", "r", stdin
-#define FOUT pathio "output.txt", "w", stdout
-#define MAXN 50005
-#define oo ((1LL << 31) - 1)
+#define lfi pathio "input.txt", "r", stdin
+#define lfo pathio "output.txt", "w", stdout
 
-vector<pair<int, int>> Graph[MAXN];
-queue<int> Q;
+using namespace std;
 
-int nodes, //number of nodes
-    edges; //number of edges
-
-int distMin[MAXN];
-bool in_Queue[MAXN];
-
-void readData()
+class Dijkstra
 {
+private:
+    int nodes, edges;
+    vector<vector<pair<int, int>>> Graph;
+    vector<int> distMin;
+    queue<int> Queue;
+    vector<bool> inQueue;
+    int oo = ((1LL << 31) - 1);
 
-    int x,
-        y,
-        c;
+public:
+    Dijkstra(int N, int M) : nodes(N),
+                             edges(M),
+                             Graph(2 * N + 1),
+                             distMin(2 * N + 1),
+                             inQueue(N + 1) {}
 
-    freopen(FIN);
-
-    scanf("%d %d", &nodes, &edges);
-
-    while (edges--)
+    void addEdge(int x, int y, int cost)
     {
-
-        scanf("%d %d %d", &x, &y, &c);
-
-        Graph[x].push_back(make_pair(y, c));
+        Graph[x].push_back(make_pair(y, cost));
     }
 
-    fclose(stdin);
-};
-
-void Dijkstra()
-{
-
-    for (int i = 2; i <= nodes; i++)
-        distMin[i] = oo;
-
-    distMin[1] = 0;
-
-    Q.push(1);
-
-    in_Queue[1] = true;
-
-    while (!Q.empty())
+    void solve()
     {
-
-        int node = Q.front();
-
-        Q.pop();
-
-        in_Queue[node] = false;
-
-        for (vector<pair<int, int>>::iterator it = Graph[node].begin(); it != Graph[node].end(); it++)
+        for (int i = 2; i <= nodes; i++)
+            distMin[i] = oo;
+        distMin[1] = 0;
+        Queue.push(1);
+        inQueue[1] = true;
+        while (!Queue.empty())
         {
-
-            if (distMin[it->first] > distMin[node] + it->second)
+            int node = Queue.front();
+            Queue.pop();
+            inQueue[node] = false;
+            for (auto G : Graph[node])
             {
-
-                distMin[it->first] = distMin[node] + it->second;
-
-                if (!in_Queue[it->first])
+                if (distMin[G.first] > distMin[node] + G.second)
                 {
-
-                    Q.push(it->first);
-
-                    in_Queue[it->first] = true;
+                    distMin[G.first] = distMin[node] + G.second;
+                    if (!inQueue[G.first])
+                    {
+                        Queue.push(G.first);
+                        inQueue[G.first] = true;
+                    }
                 }
             }
         }
     }
-};
 
-void writeData()
-{
+    void getDistMin()
+    {
+        freopen(lfo);
+        for (int i = 2; i <= nodes; i++)
+        {
+            printf("%d ", distMin[i] < oo ? distMin[i] : 0);
+        }
+        fclose(stdout);
+    }
 
-    freopen(FOUT);
-
-    for (int i = 2; i <= nodes; i++)
-        printf("%d ", (distMin[i] < oo) ? distMin[i] : 0);
-
-    fclose(stdout);
+    void printGraph()
+    {
+        cout << endl;
+        for (int i = 1; i <= nodes; i++)
+        {
+            cout << i << " -> ";
+            for (auto v : Graph[i])
+            {
+                cout << v.first;
+            }
+            cout << endl;
+        }
+        cout << endl;
+    }
 };
 
 int main()
 {
-    // freopen(fi);
-    // freopen(fo);
-    // ios_base ::sync_with_stdio(0);
+    // freopen(lfi);
+    // freopen(lfo);
+    // ios_base :: sync_with_stdio (0);
     // cin.tie(0);
 
-    readData();
-    Dijkstra();
-    writeData();
+    int n,
+        m,
+        x,
+        y,
+        cost;
+    freopen(lfi);
+    cin >> n >> m;
+    // cout << n << m;
+    // /*
 
-    return (0);
-};
+    Dijkstra dij(n, m);
+    while (m--)
+    {
+        cin >> x >> y >> cost;
+        dij.addEdge(x, y, cost);
+    }
+
+    dij.solve();
+    dij.getDistMin();
+
+    fclose(stdin);
+    fclose(stdout);
+    return 0;
+    // */
+}
+
+/*
+//////////////////////////////
+/////		Input		//////
+//////////////////////////////
+
+5 5
+1 2 10
+1 3 10
+2 4 20
+3 4 25
+1 4 33
+
+
+//////////////////////////////
+*/
+
+/*
+//////////////////////////////
+/////		Output		//////
+//////////////////////////////
+
+d( 1->1 ) = 0
+d( 1->2 ) = 10
+d( 1->3 ) = 10
+d( 1->4 ) = 30
+d( 1->5 ) = 1000111000
+
+//////////////////////////////
+*/
